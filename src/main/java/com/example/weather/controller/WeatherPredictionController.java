@@ -9,13 +9,16 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 @Tag(description = "Weather Prediction API", name = "Weather App")
-@RestController
+@Controller
 @RequestMapping("/api/weather")
 public class WeatherPredictionController {
 
@@ -36,10 +39,17 @@ public class WeatherPredictionController {
                     @ApiResponse(responseCode = "500", description = "Internal Server Error",
                             content = @Content)
             })
-    @GetMapping("/{city}")
-    public WeatherResponse getWeatherForecast(@PathVariable String city) {
+    @PostMapping("/welcome")
+    public ModelAndView getWeatherForecast(ModelMap model, @RequestParam String city) {
+        model.put("city", city);
         WeatherResponse weatherResponse = weatherService.getWeatherResponse(city);
-        return weatherResponse;
+        model.put("weather", weatherResponse);
+        return new ModelAndView("weatherPage", model);
+    }
+
+    @GetMapping("/welcome")
+    public ModelAndView getWeatherForecastWelcome(ModelMap model) {
+        return new ModelAndView("welcome");
     }
 
 }
